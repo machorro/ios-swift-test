@@ -17,6 +17,7 @@ class NotesNavigationController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         showRoot()
+        setupSearchController()
     }
     
     private func showRoot() {
@@ -38,5 +39,41 @@ class NotesNavigationController: UINavigationController {
         }
         
         self.pushViewController(vc, animated: true)
+    }
+    
+    private func setupSearchController() {
+        let search = UISearchController(searchResultsController: nil)
+        search.searchResultsUpdater = self
+        search.obscuresBackgroundDuringPresentation = false
+        search.searchBar.placeholder = "Search for a Note"
+        search.searchBar.autocapitalizationType = .none
+
+        if #available(iOS 11.0, *) {
+            root.navigationItem.searchController = search
+        }
+        else {
+            root.tableView.tableHeaderView = search.searchBar
+        }
+        self.root.definesPresentationContext = true
+    }
+}
+
+extension NotesNavigationController: UISearchResultsUpdating {
+    public func updateSearchResults(for searchController: UISearchController) {
+        guard let text = searchController.searchBar.text else { return }
+        
+        if text.isEmpty {
+            root.presenter = presenter
+            root.tableView.reloadData()
+            return
+        }
+        
+        let filteredNotes = presenter.dataSource.notes.filter {
+            $0.content.contains(text)
+        }
+        
+        root.presenter = NotesPresenter(dataSource: MockNotesDataSource(notes: filteredNotes))
+        
+        root.tableView.reloadData()
     }
 }
