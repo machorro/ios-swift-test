@@ -18,7 +18,7 @@ class NotesPresenter: INotesPresenter {
     var count: Int { return dataSource.notes.count }
     var dataSource: NotesDataSource
     
-    init(dataSource: NotesDataSource = MockNotesDataSource()) {
+    init(dataSource: NotesDataSource) {
         self.dataSource = dataSource
     }
     

@@ -29,3 +29,5 @@ extension Note: CustomStringConvertible {
         """
     }
 }
+
+extension Note: Equatable {}

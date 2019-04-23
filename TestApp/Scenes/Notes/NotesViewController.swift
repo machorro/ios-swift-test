@@ -28,7 +28,6 @@ class NotesViewController: UIViewController {
         
         configureViewController()
         
-        presenter = NotesPresenter()
         presenter?.fetchNotes { [weak tableView] in
             DispatchQueue.main.async {
                 tableView?.reloadData()
@@ -37,6 +36,7 @@ class NotesViewController: UIViewController {
     }
     
     private func configureViewController() {
+        self.title = "Notes"
         tableView.dataSource = self
     }
 

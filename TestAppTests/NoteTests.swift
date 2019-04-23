@@ -60,4 +60,11 @@ class NoteTests: XCTestCase {
         
         XCTAssertTrue(dataSource.notes.first!.creationDate > dataSource.notes.last!.creationDate)
     }
+    
+    func test_RecentlyCreatedNoteIsFirstItemIsTrue() {
+        let newNote = Note(content: "New Note", creationDate: Date())
+        dataSource.add(note: newNote)
+        
+        XCTAssertTrue(dataSource.notes.first! == newNote)
+    }
 }

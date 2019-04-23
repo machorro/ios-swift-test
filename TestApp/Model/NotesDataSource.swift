@@ -11,6 +11,7 @@ import Foundation
 protocol NotesDataSource {
     var notes: [Note] { get }
     mutating func fetchNotes(_ completion: () -> Void)
+    mutating func add(note: Note)
 }
 
 struct MockNotesDataSource: NotesDataSource {
@@ -19,6 +20,10 @@ struct MockNotesDataSource: NotesDataSource {
     mutating func fetchNotes(_ completion: () -> Void) {
         notes = mockNotes()
         completion()
+    }
+    
+    mutating func add(note: Note) {
+        notes.insert(note, at: 0)
     }
 }
 
