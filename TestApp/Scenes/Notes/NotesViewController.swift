@@ -15,6 +15,7 @@ class NotesViewController: UIViewController {
     // MARK: - Variables
 
     var presenter: INotesPresenter?
+    var selectNoteAt: (Int) -> Void = {_ in }
 
     // MARK: - Override
     
@@ -38,6 +39,7 @@ class NotesViewController: UIViewController {
     private func configureViewController() {
         self.title = "Notes"
         tableView.dataSource = self
+        tableView.delegate = self
     }
 
     override func didReceiveMemoryWarning() {
@@ -56,8 +58,29 @@ extension NotesViewController: UITableViewDataSource {
         
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "CellIdentifier")
         cell.textLabel?.text = item.content
+        cell.textLabel?.numberOfLines = 0
         cell.detailTextLabel?.text = "\(item.creationDate)"
         
         return cell
+    }
+}
+
+extension NotesViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selectNoteAt(indexPath.row)
+    }
+    
+    func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let delete = UITableViewRowAction(style: .destructive, title: "Delete") { [weak presenter] _, idx in
+            presenter?.delete(at: idx.row) {
+                tableView.reloadData()
+            }
+        }
+        
+        return [delete]
     }
 }

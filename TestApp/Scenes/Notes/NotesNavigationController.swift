@@ -10,7 +10,7 @@ import UIKit
 
 class NotesNavigationController: UINavigationController {
     
-    let presenter = NotesPresenter(dataSource: MockNotesDataSource())
+    let presenter = NotesPresenter(dataSource: CoreDataNoteDataSource())
     
     let root = NotesViewController()
 
@@ -26,6 +26,10 @@ class NotesNavigationController: UINavigationController {
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNewNote))
         root.navigationItem.setRightBarButton(addButton, animated: false)
         
+        root.selectNoteAt = { [unowned self] index in
+            self.edit(note: self.presenter.item(at: index))
+        }
+        
         self.pushViewController(root, animated: true)
     }
     
@@ -33,8 +37,19 @@ class NotesNavigationController: UINavigationController {
         let vc = NewNoteViewController()
         
         vc.saveNote = { content in
-            let note = Note(content: content, creationDate: Date())
-            self.presenter.dataSource.add(note: note)
+            self.presenter.dataSource.add(content: content, creationDate: Date())
+            self.root.tableView.reloadData()
+        }
+        
+        self.pushViewController(vc, animated: true)
+    }
+    
+    func edit(note: Note) {
+        let vc = NewNoteViewController()
+        vc.textView.text = note.content
+        
+        vc.saveNote = { [unowned self] content in
+            self.presenter.dataSource.update(note, with: content)
             self.root.tableView.reloadData()
         }
         
@@ -72,7 +87,9 @@ extension NotesNavigationController: UISearchResultsUpdating {
             $0.content.contains(text)
         }
         
-        root.presenter = NotesPresenter(dataSource: MockNotesDataSource(notes: filteredNotes))
+        let dataSource = CoreDataNoteDataSource()
+        dataSource.notes = filteredNotes
+        root.presenter = NotesPresenter(dataSource: dataSource)
         
         root.tableView.reloadData()
     }

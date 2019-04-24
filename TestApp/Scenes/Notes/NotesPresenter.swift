@@ -11,6 +11,7 @@ protocol INotesPresenter: AnyObject {
     var dataSource: NotesDataSource { get }
     func item(at index: Int) -> Note
     func fetchNotes(_ completion: () -> Void)
+    func delete(at index: Int, _ completion: () -> Void)
 }
 
 class NotesPresenter: INotesPresenter {
@@ -28,5 +29,10 @@ class NotesPresenter: INotesPresenter {
     
     func item(at index: Int) -> Note {
         return dataSource.notes[index]
+    }
+    
+    func delete(at index: Int, _ completion: () -> Void) {
+        dataSource.delete(at: index)
+        completion()
     }
 }
